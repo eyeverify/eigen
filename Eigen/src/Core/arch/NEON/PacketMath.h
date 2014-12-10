@@ -492,6 +492,18 @@ ptranspose(PacketBlock<Packet4i,4>& kernel) {
 //---------- double ----------
 #if EIGEN_ARCH_ARM64
 
+__extension__ static __inline uint64x2_t __attribute__ ((__always_inline__))
+vreinterpretq_u64_f64 (float64x2_t __a)
+{
+    return (uint64x2_t) __a;
+}
+
+__extension__ static __inline float64x2_t __attribute__ ((__always_inline__))
+vreinterpretq_f64_u64 (uint64x2_t __a)
+{
+    return (float64x2_t) __a;
+}
+    
 typedef float64x2_t Packet2d;
 typedef float64x1_t Packet1d;
 
@@ -597,7 +609,7 @@ template<> EIGEN_STRONG_INLINE Packet2d preverse(const Packet2d& a) { return vco
 
 template<> EIGEN_STRONG_INLINE Packet2d pabs(const Packet2d& a) { return vabsq_f64(a); }
 
-template<> EIGEN_STRONG_INLINE double predux<Packet2d>(const Packet2d& a) { return vget_low_f64(a) + vget_high_f64(a); }
+template<> EIGEN_STRONG_INLINE double predux<Packet2d>(const Packet2d& a) { return (vget_low_f64(a) + vget_high_f64(a))[0]; }
 
 template<> EIGEN_STRONG_INLINE Packet2d preduxp<Packet2d>(const Packet2d* vecs)
 {
@@ -613,7 +625,7 @@ template<> EIGEN_STRONG_INLINE Packet2d preduxp<Packet2d>(const Packet2d* vecs)
 }
 // Other reduction functions:
 // mul
-template<> EIGEN_STRONG_INLINE double predux_mul<Packet2d>(const Packet2d& a) { return vget_low_f64(a) * vget_high_f64(a); }
+template<> EIGEN_STRONG_INLINE double predux_mul<Packet2d>(const Packet2d& a) { return (vget_low_f64(a) * vget_high_f64(a))[0]; }
 
 // min
 template<> EIGEN_STRONG_INLINE double predux_min<Packet2d>(const Packet2d& a) { return vgetq_lane_f64(vpminq_f64(a, a), 0); }
